@@ -8,10 +8,7 @@ export default function Dashboard() {
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-<<<<<<< HEAD
-=======
   const [clients, setClients] = useState<Array<{ id: string; name: string }>>([]);
->>>>>>> origin/9uq2kt-codex/create-next.js-app-with-typescript-and-tailwind-css
 
   useEffect(() => {
     const getSession = async () => {
@@ -22,14 +19,11 @@ export default function Dashboard() {
         router.push('/auth/login');
       } else {
         setUser(session.user);
-<<<<<<< HEAD
-=======
         const { data } = await supabase
           .from('clients')
           .select('id, name')
           .eq('user_id', session.user.id);
         setClients(data || []);
->>>>>>> origin/9uq2kt-codex/create-next.js-app-with-typescript-and-tailwind-css
       }
       setLoading(false);
     };
@@ -43,18 +37,6 @@ export default function Dashboard() {
 
   if (loading) return <p>Loading...</p>;
 
-<<<<<<< HEAD
-  return (
-    <div className="p-8">
-      <h1 className="mb-4 text-2xl font-bold">Dashboard</h1>
-      <p className="mb-2">Logged in as {user?.email}</p>
-      <button
-        onClick={handleLogout}
-        className="rounded bg-red-500 p-2 text-white"
-      >
-        Logout
-      </button>
-=======
   const displayedClients = [...clients, { id: 'dummy', name: 'ACME Corp' }];
 
   return (
@@ -84,7 +66,6 @@ export default function Dashboard() {
           ))}
         </div>
       </main>
->>>>>>> origin/9uq2kt-codex/create-next.js-app-with-typescript-and-tailwind-css
     </div>
   );
 }
