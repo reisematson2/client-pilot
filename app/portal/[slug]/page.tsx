@@ -45,12 +45,12 @@ export default function Portal({ params }: PortalProps) {
     e.preventDefault();
     if (!file) return;
     const path = `${params.slug}/${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage.from('uploads').upload(path, file);
+    const { error } = await supabase.storage.from('tasks').upload(path, file);
     if (error) {
       alert(error.message);
       return;
     }
-    const { data } = supabase.storage.from('uploads').getPublicUrl(path);
+    const { data } = supabase.storage.from('tasks').getPublicUrl(path);
     await supabase
       .from('uploads')
       .insert({ client_slug: params.slug, file_url: data.publicUrl, label });
