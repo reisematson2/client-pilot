@@ -14,6 +14,26 @@ export default function Dashboard() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [slug, setSlug] = useState('');
+  interface Task {
+    id: number;
+    title: string;
+    description: string | null;
+    due_date: string | null;
+    is_complete: boolean;
+  }
+  const [tasks, setTasks] = useState<Record<string, Task[]>>({});
+  const [newTasks, setNewTasks] = useState<
+    Record<string, { title: string; description: string; due_date: string }>
+  >({});
+
+  const loadTasks = async (slug: string) => {
+    const { data } = await supabase
+      .from('tasks')
+      .select('id, title, description, due_date, is_complete')
+      .eq('client_slug', slug)
+      .order('due_date', { ascending: true });
+    setTasks((prev) => ({ ...prev, [slug]: data || [] }));
+  };
 
   useEffect(() => {
     const getSession = async () => {
@@ -29,6 +49,7 @@ export default function Dashboard() {
           .select('id, name, email, slug')
           .eq('user_id', session.user.id);
         setClients(data || []);
+        (data || []).forEach((c) => loadTasks(c.slug));
       }
       setLoading(false);
     };
@@ -54,10 +75,57 @@ export default function Dashboard() {
     }
     if (data) {
       setClients([...clients, data]);
+      loadTasks(data.slug);
       setName('');
       setEmail('');
       setSlug('');
     }
+  };
+
+  const handleAddTask = async (
+    e: React.FormEvent,
+    slug: string,
+  ) => {
+    e.preventDefault();
+    const values = newTasks[slug];
+    if (!values?.title) return;
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert({
+        title: values.title,
+        description: values.description || null,
+        due_date: values.due_date || null,
+        client_slug: slug,
+      })
+      .select()
+      .single();
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    if (data) {
+      setTasks((prev) => ({
+        ...prev,
+        [slug]: [...(prev[slug] || []), data],
+      }));
+      setNewTasks((prev) => ({
+        ...prev,
+        [slug]: { title: '', description: '', due_date: '' },
+      }));
+    }
+  };
+
+  const toggleComplete = async (slug: string, task: Task) => {
+    await supabase
+      .from('tasks')
+      .update({ is_complete: !task.is_complete })
+      .eq('id', task.id);
+    setTasks((prev) => ({
+      ...prev,
+      [slug]: prev[slug].map((t) =>
+        t.id === task.id ? { ...t, is_complete: !t.is_complete } : t,
+      ),
+    }));
   };
 
   if (loading) return <p>Loading...</p>;
@@ -113,6 +181,86 @@ export default function Dashboard() {
             <div key={client.id} className="rounded border bg-white p-4 shadow">
               <h3 className="text-lg font-semibold">{client.name}</h3>
               <p className="text-sm text-gray-600">{client.email}</p>
+
+              <ul className="mt-4 space-y-2">
+                {(tasks[client.slug] || []).map((task) => (
+                  <li key={task.id} className="flex items-start justify-between">
+                    <div>
+                      <p className="font-medium">{task.title}</p>
+                      {task.description && (
+                        <p className="text-sm text-gray-600">{task.description}</p>
+                      )}
+                      {task.due_date && (
+                        <p className="text-xs text-gray-500">
+                          Due: {new Date(task.due_date).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                    <input
+                      type="checkbox"
+                      className="h-5 w-5 mt-1"
+                      checked={task.is_complete}
+                      onChange={() => toggleComplete(client.slug, task)}
+                    />
+                  </li>
+                ))}
+              </ul>
+
+              <form
+                onSubmit={(e) => handleAddTask(e, client.slug)}
+                className="mt-4 space-y-2"
+              >
+                <input
+                  type="text"
+                  placeholder="Task title"
+                  value={newTasks[client.slug]?.title || ''}
+                  onChange={(e) =>
+                    setNewTasks((prev) => ({
+                      ...prev,
+                      [client.slug]: {
+                        ...prev[client.slug],
+                        title: e.target.value,
+                      },
+                    }))
+                  }
+                  className="w-full rounded border p-2"
+                  required
+                />
+                <textarea
+                  placeholder="Description"
+                  value={newTasks[client.slug]?.description || ''}
+                  onChange={(e) =>
+                    setNewTasks((prev) => ({
+                      ...prev,
+                      [client.slug]: {
+                        ...prev[client.slug],
+                        description: e.target.value,
+                      },
+                    }))
+                  }
+                  className="w-full rounded border p-2"
+                />
+                <input
+                  type="date"
+                  value={newTasks[client.slug]?.due_date || ''}
+                  onChange={(e) =>
+                    setNewTasks((prev) => ({
+                      ...prev,
+                      [client.slug]: {
+                        ...prev[client.slug],
+                        due_date: e.target.value,
+                      },
+                    }))
+                  }
+                  className="w-full rounded border p-2"
+                />
+                <button
+                  type="submit"
+                  className="rounded bg-green-600 px-3 py-1 text-white"
+                >
+                  Add Task
+                </button>
+              </form>
             </div>
           ))}
         </div>
