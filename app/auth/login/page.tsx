@@ -45,6 +45,15 @@ export default function Login() {
         <button type="submit" className="w-full rounded bg-blue-600 p-2 text-white">
           Login
         </button>
+        <div className="text-center mt-4">
+          <span className="text-gray-600">Don't have an account?</span>
+          <a
+            href="/auth/register"
+            className="ml-2 text-blue-600 hover:underline"
+          >
+            Register
+          </a>
+        </div>
       </form>
     </div>
   );
