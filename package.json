@@ -8,7 +8,6 @@
     "start": "next start"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@supabase/supabase-js": "^2.50.0",
     "next": "14.2.3",
     "react": "18.2.0",
@@ -16,14 +15,6 @@
   },
   "devDependencies": {
     "@types/react": "19.1.8",
-=======
-    "next": "14.2.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "supabase-js": "2.39.7"
-  },
-  "devDependencies": {
->>>>>>> origin/9uq2kt-codex/create-next.js-app-with-typescript-and-tailwind-css
     "autoprefixer": "10.4.17",
     "postcss": "8.4.32",
     "tailwindcss": "3.4.4",
