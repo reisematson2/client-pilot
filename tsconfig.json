@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
     "target": "es5",
+<<<<<<< HEAD
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
+=======
+    "lib": ["dom", "dom.iterable", "esnext"],
+>>>>>>> origin/9uq2kt-codex/create-next.js-app-with-typescript-and-tailwind-css
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -18,6 +22,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+<<<<<<< HEAD
     "types": [
       "node",
       "@types/react",
@@ -43,4 +48,13 @@
   "exclude": [
     "node_modules"
   ]
+=======
+    "types": ["node", "@types/react", "@types/node"],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+>>>>>>> origin/9uq2kt-codex/create-next.js-app-with-typescript-and-tailwind-css
 }
